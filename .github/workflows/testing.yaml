@@ -42,7 +42,9 @@ jobs:
       - name: "Running local action: ${{ github.repository }}"
         uses: ./
         with:
-          input: "test input 💬"
+          peer-ip: "192.168.1.100"
+          psk: "test-pre-shared-key"
+          remote-networks: "10.0.0.0/8,172.16.0.0/12"
 
       - name: "Validated local action: ${{ github.repository }}"
         shell: bash
@@ -57,6 +59,9 @@ jobs:
         id: failure
         continue-on-error: true
         with:
+          peer-ip: "192.168.1.100"
+          psk: "test-pre-shared-key"
+          remote-networks: "10.0.0.0/8,172.16.0.0/12"
           invalid_input: "Some garbage"
 
       # Failure testing is also important

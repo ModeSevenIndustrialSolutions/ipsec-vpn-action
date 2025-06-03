@@ -44,13 +44,13 @@ repos:
       - id: gitlint
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: 79a6b2b1392eaf49cdd32ac4f14be1a809bbd8f7  # frozen: v1.37.1
+    rev: 79a6b2b1392eaf49cdd32ac4f14be1a809bbd8f7 # frozen: v1.37.1
     hooks:
       - id: yamllint
         types: [yaml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: d19233b89771be2d89273f163f5edc5a39bbc34a  # frozen: v0.11.12
+    rev: d19233b89771be2d89273f163f5edc5a39bbc34a # frozen: v0.11.12
     hooks:
       - id: ruff
         files: ^(scripts|tests|custom_components)/.+\.py$
@@ -59,7 +59,7 @@ repos:
         files: ^(scripts|tests|custom_components)/.+\.py$
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 7010b10a09f65cd60a23c207349b539aa36dbec1  # frozen: v1.16.0
+    rev: 7010b10a09f65cd60a23c207349b539aa36dbec1 # frozen: v1.16.0
     hooks:
       - id: mypy
 
@@ -69,13 +69,15 @@ repos:
       - id: write-good
         files: "\\.(rst|md|markdown|mdown|mkdn)$"
 
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: a23f6b85d0fdd5bb9d564e2579e678033debbdff # frozen: v0.10.0.1
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.9.0
     hooks:
       - id: shellcheck
+        args: [-e, SC1091, -e, SC2034]
+        files: \.(sh|bash)$
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: 192ad822316c3a22fb3d3cc8aa6eafa0b8488360  # frozen: v0.45.0
+    rev: 192ad822316c3a22fb3d3cc8aa6eafa0b8488360 # frozen: v0.45.0
     hooks:
       - id: markdownlint
         args: ["--fix"]
@@ -100,7 +102,7 @@ repos:
         args: ["--ignore-words=.codespell"]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema.git
-    rev: 06e4cc849d03f3a59ca223a4046f4bb5bb2aba6d  # frozen: 0.33.0
+    rev: 06e4cc849d03f3a59ca223a4046f4bb5bb2aba6d # frozen: 0.33.0
     hooks:
       - id: check-github-actions
       - id: check-github-workflows
@@ -113,3 +115,10 @@ repos:
         types:
           - yaml
       - id: check-readthedocs
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.3
+    hooks:
+      - id: prettier
+        files: \.(yml|yaml)$
+        args: [--tab-width, "2"]
