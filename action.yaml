@@ -2,36 +2,106 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 
-# actions-template
-name: "🛠️ Actions Template"
-description: "Description of action"
-# Any relevant notes/observations can go here
+name: "IPSEC VPN Setup"
+description: "Sets up an IPSEC VPN connection to a remote endpoint"
+branding:
+  icon: "shield"
+  color: "blue"
 
 inputs:
-  input:
-    description: "Description of input"
+  peer-ip:
+    description: "Remote IPSEC peer IP address"
     required: true
-
-outputs:
-  output:
-    description: "Description of output"
-    value: ${{ steps.code.outputs.output }}
+  peer-id:
+    description: "Remote peer identifier (default: peer IP)"
+    required: false
+  local-id:
+    description: "Local identifier (default: %any)"
+    required: false
+    default: "%any"
+  remote-networks:
+    description: "Remote network CIDR blocks (comma-separated)"
+    required: true
+  psk:
+    description: "Pre-shared key for authentication"
+    required: true
+  ike-version:
+    description: "IKE version (1 or 2)"
+    required: false
+    default: "2"
+  encryption-algorithm:
+    description: "Encryption algorithm"
+    required: false
+    default: "aes256"
+  hash-algorithm:
+    description: "Hash algorithm"
+    required: false
+    default: "sha256"
+  dh-group:
+    description: "Diffie-Hellman group"
+    required: false
+    default: "14"
+  esp-encryption:
+    description: "ESP encryption algorithm"
+    required: false
+    default: "aes256"
+  esp-hash:
+    description: "ESP hash algorithm"
+    required: false
+    default: "sha256"
+  pfs-group:
+    description: "Perfect Forward Secrecy group"
+    required: false
+    default: "14"
+  ike-lifetime:
+    description: "IKE SA lifetime in seconds"
+    required: false
+    default: "28800"
+  esp-lifetime:
+    description: "ESP SA lifetime in seconds"
+    required: false
+    default: "3600"
+  connection-timeout:
+    description: "Connection timeout in seconds"
+    required: false
+    default: "30"
 
 runs:
   using: "composite"
   steps:
-    - name: "Friendly Name"
-      id: code
+    - name: Install IPSEC dependencies
       shell: bash
-      run: |
-        # Friendly Name
-        input="${{ inputs.input }}"
-        if [ -z "$input" ]; then
-          echo "Error: mandatory input was not set/configured ❌"
-          exit 1
-        fi
+      run: ${{ github.action_path }}/scripts/install-deps.sh
 
-        echo "output=$input" >> "$GITHUB_ENV"
-        echo "output=$input" >> "$GITHUB_OUTPUT"
-        echo "Action received: $input ✅"
-        echo "Action received: $input ✅" >> "$GITHUB_STEP_SUMMARY"
+    - name: Configure IPSEC
+      shell: bash
+      env:
+        PEER_IP: ${{ inputs.peer-ip }}
+        PEER_ID: ${{ inputs.peer-id }}
+        LOCAL_ID: ${{ inputs.local-id }}
+        REMOTE_NETWORKS: ${{ inputs.remote-networks }}
+        PSK: ${{ inputs.psk }}
+        IKE_VERSION: ${{ inputs.ike-version }}
+        ENCRYPTION_ALGORITHM: ${{ inputs.encryption-algorithm }}
+        HASH_ALGORITHM: ${{ inputs.hash-algorithm }}
+        DH_GROUP: ${{ inputs.dh-group }}
+        ESP_ENCRYPTION: ${{ inputs.esp-encryption }}
+        ESP_HASH: ${{ inputs.esp-hash }}
+        PFS_GROUP: ${{ inputs.pfs-group }}
+        IKE_LIFETIME: ${{ inputs.ike-lifetime }}
+        ESP_LIFETIME: ${{ inputs.esp-lifetime }}
+        CONNECTION_TIMEOUT: ${{ inputs.connection-timeout }}
+      run: ${{ github.action_path }}/scripts/configure-ipsec.sh
+
+    - name: Start IPSEC connection
+      shell: bash
+      env:
+        CONNECTION_TIMEOUT: ${{ inputs.connection-timeout }}
+      run: ${{ github.action_path }}/scripts/start-ipsec.sh
+
+    - name: Verify IPSEC connection
+      shell: bash
+      env:
+        REMOTE_NETWORKS: ${{ inputs.remote-networks }}
+        CONNECTION_TIMEOUT: ${{ inputs.connection-timeout }}
+      run: ${{ github.action_path }}/scripts/verify-ipsec.sh
